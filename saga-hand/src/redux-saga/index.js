@@ -27,6 +27,8 @@ export default function createSagaMiddleware () {
           if (typeof effect[Symbol.iterator] === 'function') { // 如果effect是生成器
             run(effect);
             next();
+          }else if (effect.then) { // 如果effect是promise
+            effect.then(next)
           } else {
             switch (effect.type) {
               case 'TAKE':
