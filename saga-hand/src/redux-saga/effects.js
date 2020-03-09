@@ -11,3 +11,19 @@ export function put(action) {
       action
   }
 }
+
+export function fork(task) { //fork接收的是生成器
+  return {
+      type: 'FORK',
+      task
+  }
+}
+
+export function* takeEvery(actionType,task) { // task是生成器
+  yield fork(function* () {
+      while (true) {
+          yield take(actionType);
+          yield task();
+      }
+  });
+}

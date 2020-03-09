@@ -24,8 +24,7 @@ export default function createSagaMiddleware () {
       function next(action) {
         const {done, value: effect} = it.next(action)
         if (!done) {
-          console.log(effect[Symbol.iterator], 'effect')
-          if (typeof effect[Symbol.iterator] === 'function') { // 如果effect是迭代器
+          if (typeof effect[Symbol.iterator] === 'function') { // 如果effect是生成器
             run(effect);
             next();
           } else {
@@ -35,6 +34,11 @@ export default function createSagaMiddleware () {
                 break;
               case 'PUT':
                 dispatch(effect.action)
+                next()
+                break;
+              case 'FORK':
+              console.log('effect', effect)
+                run(effect.task)
                 next()
                 break;
               default:
