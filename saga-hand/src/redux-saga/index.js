@@ -20,20 +20,26 @@ export default function createSagaMiddleware () {
 
   function sagaMiddleware({getState,dispatch}) {
     function run(generator) {
-      const it = generator()
+      const it = typeof generator === 'function' ? generator() : generator;
       function next(action) {
         const {done, value: effect} = it.next(action)
         if (!done) {
-          switch (effect.type) {
-            case 'TAKE':
-              channel.subscribe(effect.actionType, next)
-              break;
-            case 'PUT':
-              dispatch(effect.action)
-              next()
-              break;
-            default:
-              break;
+          console.log(effect[Symbol.iterator], 'effect')
+          if (typeof effect[Symbol.iterator] === 'function') { // 如果effect是迭代器
+            run(effect);
+            next();
+          } else {
+            switch (effect.type) {
+              case 'TAKE':
+                channel.subscribe(effect.actionType, next)
+                break;
+              case 'PUT':
+                dispatch(effect.action)
+                next()
+                break;
+              default:
+                break;
+            }
           }
         }
       }
