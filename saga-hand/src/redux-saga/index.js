@@ -19,7 +19,7 @@ export default function createSagaMiddleware () {
   const channel = createChannel()
 
   function sagaMiddleware({getState,dispatch}) {
-    function run(generator) {
+    function run(generator, callback) {
       const it = typeof generator === 'function' ? generator() : generator;
       function next(action) {
         const {done, value: effect} = it.next(action)
@@ -48,10 +48,17 @@ export default function createSagaMiddleware () {
               case 'CPS':
                 effect.fn(...effect.args, next)
                 break;
+              case 'ALL':
+                const fns = effect.fns
+                const done = times(next, fns.length)
+                fns.forEach(fn => run(fn, done))
+                break;
               default:
                 break;
             }
           }
+        } else {
+          callback && callback()
         }
       }
       next()
@@ -72,3 +79,13 @@ export default function createSagaMiddleware () {
   return sagaMiddleware
 
 }
+
+function times(cb, total) {
+  let count = 0;
+  return function () {
+    if (++count === total) {
+      cb();
+    }
+  }
+}
+    

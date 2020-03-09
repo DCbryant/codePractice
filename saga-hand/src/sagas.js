@@ -1,4 +1,4 @@
-import {put,take, takeEvery, call, delay, cps} from './redux-saga/effects';
+import {put,take, takeEvery, call, delay, cps, all} from './redux-saga/effects';
 import * as types from './store/action-types';
 
 // const delay = ms => new Promise((resolve,reject) => {
@@ -19,6 +19,18 @@ export function* increment() {
   yield put({type:types.INCREMENT});
 }
 
+export function* incrementWatcher() {
+  yield takeEvery(types.INCREMENT_ASYNC, increment);
+}
+
+export function* logger() {
+  console.log('action');
+}
+
+export function* loggerWatcher() {
+  yield takeEvery(types.INCREMENT_ASYNC,logger);
+}
+
 // export function* increment() {
 //   // yield call(delay, 1000)
 //   yield delay(1000)
@@ -26,5 +38,7 @@ export function* increment() {
 // }
 
 export function* rootSaga() {
-  yield takeEvery(types.INCREMENT_ASYNC,increment);
+  // yield takeEvery(types.INCREMENT_ASYNC,increment);
+  yield all([incrementWatcher(), loggerWatcher()])
+  console.log('done')
 }

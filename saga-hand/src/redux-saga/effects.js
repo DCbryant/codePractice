@@ -53,3 +53,10 @@ export function cps(fn,...args) {
     args
   }
 }
+
+export function all(fns) {
+  return {
+    type: 'ALL',
+    fns
+  }
+}
