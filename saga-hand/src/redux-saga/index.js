@@ -39,8 +39,12 @@ export default function createSagaMiddleware () {
                 next()
                 break;
               case 'FORK':
-                run(effect.task)
-                next()
+                const newTask = effect.task
+                run(newTask)
+                next(newTask)
+                break;
+              case 'CANCEL':
+                effect.task.return('over')
                 break;
               case 'CALL':
                 effect.fn(...effect.args).then(next)

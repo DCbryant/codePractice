@@ -60,3 +60,10 @@ export function all(fns) {
     fns
   }
 }
+
+export function cancel(task) {
+  return {
+    type: 'CANCEL',
+    task
+  }
+}
