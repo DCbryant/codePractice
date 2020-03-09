@@ -1,47 +1,55 @@
 export function take(actionType) {
   return {
-      type:'TAKE',
-      actionType
+    type:'TAKE',
+    actionType
   }
 }
 
 export function put(action) {
   return {
-      type: 'PUT',
-      action
+    type: 'PUT',
+    action
   }
 }
 
 export function fork(task) { //fork接收的是生成器
   return {
-      type: 'FORK',
-      task
+    type: 'FORK',
+    task
   }
 }
 
 export function* takeEvery(actionType,task) { // task是生成器
   yield fork(function* () {
-      while (true) {
-          yield take(actionType);
-          yield task();
-      }
+    while (true) {
+      yield take(actionType);
+      yield task();
+    }
   });
 }
 
 export function call(fn,...args) {
   return {
-      type: 'CALL',
-      fn,
-      args
+    type: 'CALL',
+    fn,
+    args
   }
 }
 
 const innerDelay = ms => new Promise((resolve,reject) => {
   setTimeout(() => {
-      resolve();
+    resolve();
   },ms);
 })
 
 export function delay(...args) {
   return call(innerDelay, ...args);
+}
+
+export function cps(fn,...args) {
+  return {
+    type: 'CPS',
+    fn,
+    args
+  }
 }

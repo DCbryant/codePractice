@@ -45,6 +45,9 @@ export default function createSagaMiddleware () {
               case 'CALL':
                 effect.fn(...effect.args).then(next)
                 break;
+              case 'CPS':
+                effect.fn(...effect.args, next)
+                break;
               default:
                 break;
             }
